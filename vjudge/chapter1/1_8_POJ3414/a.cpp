@@ -8,119 +8,130 @@
 
 using namespace std;
 
-bool memo[101][101];
-int A, B, C;
+int memo[102][102];
+int S, N, M;
 int ans = 0;
 
 const int inf = 0x3f3f3f3f;
 struct Point {
   int x;
   int y;
-  int pre;
-  int move;
+  // int pre;
+  // int move;
 };
 
-std::vector<Point> points;
-int bfs() {
-  int cur = 0;
-  Point start{0, 0, -1, -1};
-  points.push_back(start);
-  memo[0][0] = true;
-  while (cur < points.size()) {
-    Point p = points.at(cur);
-    if (p.x == C || p.y == C) {
-      return cur;
+std::queue<Point> points;
+void bfs() {
+  memset(memo, inf, sizeof(memo));
+  Point start{0, 0};
+  points.push(start);
+  memo[0][0] = 0;
+  while (!points.empty()) {
+    Point p = points.front();
+    points.pop();
+    if (((p.x + p.y == S) && (p.x == p.y)) || (p.x == S / 2 && p.y == 0) ||
+        (p.y == S / 2 && p.x == 0)) {
+      return;
     }
 
     for (int i = 0; i < 6; i++) {
       switch (i) {
       case 0: {
-        if (p.x == A || memo[A][p.y]) {
-          break;
+        int mount = min(S - (p.x + p.y), N - p.x);
+        if (p.x == N || p.x + p.y == S ||
+            memo[p.x][p.y] + 1 >= memo[p.x + mount][p.y]) {
+          continue;
         }
-        Point newp{A, p.y, cur, 0};
-        points.push_back(newp);
-        memo[A][p.y] = true;
+        Point newp{p.x + mount, p.y};
+        points.push(newp);
+        memo[p.x + mount][p.y] = memo[p.x][p.y] + 1;
         break;
       }
       case 1: {
-        if (p.y == B || memo[p.x][B]) {
-          break;
+        int mount = min(S - (p.x + p.y), M - p.y);
+        if (p.y == M || p.x + p.y == S ||
+            memo[p.x][p.y] + 1 >= memo[p.x][p.y + mount]) {
+          continue;
         }
-        Point newp{p.x, B, cur, 1};
-        points.push_back(newp);
-        memo[p.x][B] = true;
+        Point newp{p.x, p.y + mount};
+        points.push(newp);
+        memo[p.x][p.y + mount] = memo[p.x][p.y] + 1;
         break;
       }
       case 2: {
-        if (p.x == 0 || memo[0][p.y]) {
-          break;
+        if (p.x == 0 || memo[p.x][p.y] + 1 >= memo[0][p.y]) {
+          continue;
         }
-        Point newp{0, p.y, cur, 2};
-        points.push_back(newp);
-        memo[0][p.y] = true;
+        Point newp{0, p.y};
+        points.push(newp);
+        memo[0][p.y] = memo[p.x][p.y] + 1;
         break;
       }
       case 3: {
-        if (p.y == 0 || memo[p.x][0]) {
-          break;
+        if (p.y == 0 || memo[p.x][p.y] + 1 >= memo[p.x][0]) {
+          continue;
         }
-        Point newp{p.x, 0, cur, 3};
-        points.push_back(newp);
-        memo[p.x][0] = true;
+        Point newp{p.x, 0};
+        points.push(newp);
+        memo[p.x][0] = memo[p.x][p.y] + 1;
         break;
       }
       case 4: {
-        int mount = min(p.x, B - p.y);
-        if (mount == 0 || memo[p.x - mount][p.y + mount]) {
-          break;
+        int mount = min(p.x, M - p.y);
+        if (mount == 0 ||
+            memo[p.x][p.y] + 1 >= memo[p.x - mount][p.y + mount]) {
+          continue;
         }
-        Point newp{p.x - mount, p.y + mount, cur, 4};
-        points.push_back(newp);
-        memo[p.x - mount][p.y + mount] = true;
+        Point newp{p.x - mount, p.y + mount};
+        points.push(newp);
+        memo[p.x - mount][p.y + mount] = memo[p.x][p.y] + 1;
         break;
       }
       case 5: {
-        int mount = min(A - p.x, p.y);
-        if (mount == 0 || memo[p.x + mount][p.y - mount]) {
-          break;
+        int mount = min(N - p.x, p.y);
+        if (mount == 0 ||
+            memo[p.x][p.y] + 1 >= memo[p.x + mount][p.y - mount]) {
+          continue;
         }
-        Point newp{p.x + mount, p.y - mount, cur, 5};
-        points.push_back(newp);
-        memo[p.x + mount][p.y - mount] = true;
+        Point newp{p.x + mount, p.y - mount};
+        points.push(newp);
+        memo[p.x + mount][p.y - mount] = memo[p.x][p.y] + 1;
         break;
       }
       }
     }
-    cur++;
   }
-  return -2;
 }
 
 string moves[6] = {"FILL(1)", "FILL(2)",   "DROP(1)",
                    "DROP(2)", "POUR(1,2)", "POUR(2,1)"};
-int length = 0;
-void printans(int idx) {
-  if (idx == -2) {
-    cout << "impossible" << endl;
-    return;
-  }
 
-  if (idx == 0) {
-    cout << length << endl;
-  } else {
-    length++;
-    int pre = points[idx].pre;
-    printans(pre);
-    cout << moves[points[idx].move] << endl;
-  }
-}
 int main() {
-  memset(memo, false, sizeof(memo));
-  points.clear();
-  cin >> A >> B >> C;
-  int ans = bfs();
-  printans(ans);
+  while (true) {
+    memset(memo, inf, sizeof(memo));
+    cin >> S >> N >> M;
+    if (S == 0 || N == 0 || M == 0) {
+      break;
+    }
+    while (!points.empty()) {
+      points.pop();
+    }
+    if (S % 2 == 1) {
+      cout << "NO" << endl;
+      continue;
+    }
+
+    bfs();
+    if (memo[S / 2][S / 2] != inf) {
+      cout << memo[S / 2][S / 2] << endl;
+    } else if (memo[S / 2][0] != inf) {
+      cout << memo[S / 2][0] << endl;
+    } else if (memo[0][S / 2] != inf) {
+      cout << memo[0][S / 2] << endl;
+    } else {
+      cout << "NO" << endl;
+    }
+  }
 
   // printAns();
 
