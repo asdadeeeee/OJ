@@ -7,14 +7,16 @@
 #include <set>
 #include <vector>
 using namespace std;
+const int inf = 0x3f3f3f3f;
 int M, N;
 int mat[16][16];
 int ans[16][16];
+int save[16][16];
 int temp[16][16];
 queue<int> bfs_que_;
 set<int> mat_set_;
-int res = 0;
-
+int res = inf;
+bool flag = false;
 int dx[5] = {-1, 0, 1, 0, 0};
 int dy[5] = {0, 0, 0, 1, -1};
 bool bound(int x, int y) {
@@ -35,8 +37,11 @@ bool bound(int x, int y) {
 //   }
 // }
 
-void reverse(int x, int y) {
-  ans[x][y] ^= 1;
+void reverse(int x, int y, int hint) {
+  if (!hint) {
+    return;
+  }
+  save[x][y] ^= 1;
   for (int i = 0; i < 5; i++) {
     int nx = x + dx[i];
     int ny = y + dy[i];
@@ -57,6 +62,13 @@ bool AllZero(int mat[][16]) {
   return true;
 }
 
+void setZero(int arr[][16]) //初始化翻转次数
+{
+  for (int i = 0; i < M; i++)
+    for (int j = 0; j < N; j++)
+      arr[i][j] = 0;
+}
+
 void printmat(int mat[][16]) {
   for (int i = 0; i < M; i++) {
     for (int j = 0; j < N; j++) {
@@ -65,62 +77,60 @@ void printmat(int mat[][16]) {
     cout << endl;
   }
 }
-int encode(int mat[][16]) {
-  int x = 0;
-  for (int i = 0; i < M; ++i) {
-    for (int j = 0; j < N; ++j) {
-      x = x * 2 + mat[i][j];
+int getSum(int mat[][16]) {
+  int sum = 0;
+  for (int i = 0; i < M; i++) {
+    for (int j = 0; j < N; j++) {
+      sum += mat[i][j];
     }
   }
-  return x;
+  return sum;
 }
 
-void decode(int x) {
-  memset(temp, 0, sizeof(temp));
-  for (int i = M - 1; i >= 0; i--) {
-    for (int j = N - 1; j >= 0; j--) {
-      temp[i][j] = x & 1;
-      x >>= 1;
-    }
-  }
+void copyArr(int des[][16], int res[][16]) {
+  for (int i = 0; i < M; i++)
+    for (int j = 0; j < N; j++)
+      des[i][j] = res[i][j];
 }
-void minFlips(int mat[][16]) {
-  int mat_val = encode(mat);
-  bfs_que_.push(mat_val);
-  mat_set_.insert(mat_val);
-  if (AllZero(mat)) {
-    printmat(ans);
-    return;
-  }
-  while (!bfs_que_.empty()) {
-    res++;
-    printf("res = %d\n", res);
-    int length = bfs_que_.size();
-    for (int k = 0; k < length; k++) {
-      int cur_mat_value = bfs_que_.front();
-      bfs_que_.pop();
-      decode(cur_mat_value);
-      for (int i = 0; i < M; i++) {
-        for (int j = 0; j < N; j++) {
-          // reverse(&temp, i, j);
-          reverse(i, j);
-          if (AllZero(temp)) {
-            printmat(ans);
-            return;
-          }
-          int temp_mat_value = encode(temp);
-          if (mat_set_.find(temp_mat_value) == mat_set_.end()) {
-            mat_set_.insert(temp_mat_value);
-            bfs_que_.push(temp_mat_value);
-          }
-          // reverse(&temp, i, j);
-          reverse(i, j);
-        }
+void dfs(int k) {
+  if (k == M) {
+    for (int i = 0; i < N; i++) {
+      if (temp[k - 1][i]) {
+        return;
       }
     }
+    flag = true;
+    int sum_ = getSum(save);
+    if (sum_ < res) {
+      res = sum_;
+      copyArr(ans, save);
+    }
+    return;
   }
-  cout << "IMPOSSIBLE" << endl;
-  return;
+  for (int i = 0; i < N; i++) {
+    reverse(k, i, temp[k - 1][i]);
+  }
+  dfs(k + 1);
+}
+
+void resolve() {
+
+  setZero(ans);
+
+  for (int k = 0; k < 1 << N; k++) {
+    copyArr(temp, mat);
+    setZero(save);
+    for (int i = 0; i < N; i++) {
+      int t = 0;
+      if ((k & 0x1 << i) == 0) {
+        t = 0;
+      } else {
+        t = 1;
+      }
+      reverse(0, i, t);
+    }
+    dfs(1);
+  }
 }
 int main() {
 
@@ -131,10 +141,13 @@ int main() {
       cin >> mat[i][j];
     }
   }
-  minFlips(mat);
-  cout << res << endl;
-
-  // printAns();
+  resolve();
+  // cout << res << endl;
+  if (flag) {
+    printmat(ans);
+  } else {
+    cout << "IMPOSSIBLE" << endl;
+  }
 
   return 0;
 }
