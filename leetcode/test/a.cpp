@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 class B {
@@ -17,6 +18,8 @@ public:
 };
 
 int main() {
-  A a;
-  a.test();
+  std::vector<int> nums = {1, 2, 3};
+  auto iter = nums.begin();
+  nums.erase(iter);
+  cout << *iter;
 }
