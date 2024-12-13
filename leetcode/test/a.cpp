@@ -18,8 +18,10 @@ public:
 };
 
 int main() {
-  std::vector<int> nums = {1, 2, 3};
-  auto iter = nums.begin();
-  nums.erase(iter);
-  cout << *iter;
+  int a = 0;
+  while (a < 10) {
+    a = 10;
+    cout << a;
+    continue;
+  }
 }
