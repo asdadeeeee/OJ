@@ -7,20 +7,19 @@
 #include <utility>
 #include <vector>
 using namespace std;
-
+typedef pair<int, int> Node;
 int N, M, X;
 int A[1001][1001];
 int B[1001][1001];
 const int inf = 0x3f3f3f3f;
-
 int dij(int s) {
-  priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> qa;
+  priority_queue<Node, vector<Node>, greater<Node> > qa;
   int distA[1001];
   memset(distA, inf, sizeof(distA));
   distA[s] = 0;
-  qa.push({0, s});
+  qa.push(make_pair(0, s));
   while (!qa.empty()) {
-    auto cur = qa.top();
+    Node cur = qa.top();
     qa.pop();
     if (cur.first > distA[cur.second]) {
       continue;
@@ -28,18 +27,18 @@ int dij(int s) {
     for (int i = 1; i <= N; i++) {
       if (distA[i] > cur.first + A[cur.second][i]) {
         distA[i] = cur.first + A[cur.second][i];
-        qa.emplace(distA[i], i);
+        qa.push(make_pair(distA[i], i));
       }
     }
   }
 
-  priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> qb;
+  priority_queue<Node, vector<Node>, greater<Node> > qb;
   int distB[1001];
   memset(distB, inf, sizeof(distB));
   distB[s] = 0;
-  qb.push({0, s});
+  qb.push(make_pair(0, s));
   while (!qb.empty()) {
-    auto cur = qb.top();
+    Node cur = qb.top();
     qb.pop();
     if (cur.first > distB[cur.second]) {
       continue;
@@ -47,7 +46,7 @@ int dij(int s) {
     for (int i = 1; i <= N; i++) {
       if (distB[i] > cur.first + B[cur.second][i]) {
         distB[i] = cur.first + B[cur.second][i];
-        qb.emplace(distB[i], i);
+        qb.push(make_pair(distB[i], i));
       }
     }
   }
