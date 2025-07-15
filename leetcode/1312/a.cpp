@@ -10,6 +10,7 @@ public:
     int dp[n][n];
     memset(dp, 0, sizeof(dp));
     for (int i = n - 1; i >= 0; i--) {
+      int a =  
       dp[i][i] = 0;
       for (int j = i + 1; j < n; j++) {
         if (s[i] == s[j]) {

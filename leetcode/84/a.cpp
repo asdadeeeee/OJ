@@ -13,15 +13,23 @@ public:
     s.push(0);
     for (int i = 1; i < n; i++) {
       int e = heights[i];
-      while (!s.empty() && heights[s.top()] > e) {
+      while (!s.empty() && heights[s.top()] >= e) {
         int height = heights[s.top()];
         s.pop();
-        int leftidx = s.top();
-        int width = i - leftidx - 1;
-        ans = max(ans, width * height);
+        if (!s.empty()) {
+          int leftidx = s.top();
+          int width = i - leftidx - 1;
+          ans = max(ans, width * height);
+        }
       }
       s.push(i);
     }
     return ans;
   }
 };
+
+int main() {
+  vector<int> heights = {2, 1, 5, 6, 2, 3};
+  Solution so;
+  so.largestRectangleArea(heights);
+}

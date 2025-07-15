@@ -1,0 +1,15 @@
+[2025-05-19 21:05:27] [DEBUG] This is a debug message
+[2025-05-19 21:05:27] [INFO] Application started
+[2025-05-19 21:05:27] [WARNING] This is a warning
+[2025-05-19 21:05:27] [ERROR] An error occurred
+[2025-05-19 21:05:27] [INFO] Thread 0 is running
+[2025-05-19 21:05:27] [DEBUG] Thread 0 debug info
+[2025-05-19 21:05:27] [INFO] Thread 1 is running
+[2025-05-19 21:05:27] [DEBUG] Thread 1 debug info
+[2025-05-19 21:05:27] [INFO] Thread 2 is running
+[2025-05-19 21:05:27] [DEBUG] Thread 2 debug info
+[2025-05-19 21:05:27] [INFO] Thread 3 is running
+[2025-05-19 21:05:27] [DEBUG] Thread 3 debug info
+[2025-05-19 21:05:27] [INFO] Thread 4 is running
+[2025-05-19 21:05:27] [DEBUG] Thread 4 debug info
+[2025-05-19 21:05:27] [WARNING] This warning should appear

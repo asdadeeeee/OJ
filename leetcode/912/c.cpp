@@ -29,7 +29,7 @@ public:
     int temp = nums[begin];
     int ptr1 = begin + 1;
     int ptr2 = end;
-    while (ptr1 < ptr2) {
+    while (ptr1 <= ptr2) {
       while (ptr1 < end && nums[ptr1] <= temp) {
         ptr1++;
       }
